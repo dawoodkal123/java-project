@@ -6,7 +6,7 @@ pipeline{
     stages{
         stage('code'){
             steps{
-                git 'https://github.com/Ritesh-Prasad/java-project.git'
+                git 'https://github.com/dawoodkal123/java-project.git'
             }
         }
         stage('Build'){
@@ -26,7 +26,7 @@ pipeline{
         }
         stage('tomcat'){
             steps{
-                deploy adapters: [tomcat9(alternativeDeploymentContext: '', credentialsId: 'tomcat', path: '', url: 'http://52.66.180.98:8080/')], contextPath: 'netflix', war: 'target/*'
+                deploy adapters: [tomcat9(alternativeDeploymentContext: '', credentialsId: 'tomcat', path: '', url: 'http://98.80.142.127:8080/')], contextPath: 'netflix', war: 'target/*'
             }
         }
     }
