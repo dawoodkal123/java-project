@@ -11,6 +11,7 @@
 	<properties>
 		<docker.image.prefix>kammana</docker.image.prefix>
 	</properties>	
+	
 	<dependencies>
 		<dependency>
 		    <groupId>com.oracle.bedrock</groupId>
@@ -24,8 +25,17 @@
 			<version>4.13.2</version>
 			<scope>test</scope>
 		</dependency>
-
 	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.2.5</version>
+			</plugin>
+		</plugins>
+	</build>
 	
 	<distributionManagement>
 		 <snapshotRepository>
@@ -37,7 +47,7 @@
 		    <id>nexusRepo</id>
 		    <url>http://13.233.230.166:8081/repository/maven-releases/</url>
 		</repository>
-  	</distributionManagement>
+ 	</distributionManagement>
 	
 	<pluginRepositories>
 	    <pluginRepository>    
@@ -46,6 +56,4 @@
 		<url>http://repo1.maven.org/maven2</url>
 	    </pluginRepository>
 	</pluginRepositories>
-
-	
 </project>
