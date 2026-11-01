@@ -26,7 +26,13 @@ pipeline {
         }
         stage('Tomcat Deploy') {
             steps {
-                deploy adapters: [tomcat10(alternativeDeploymentContext: '', credentialsId: 'tomcat', path: '', url: 'http://98.80.142.127:8080/')], contextPath: 'netflix', war: 'target/*.war'
+                // Option A: If Jenkins and Tomcat are on the same machine/server:
+                sh 'cp target/NETFLIX-1.2.2.war /var/lib/tomcat10/webapps/netflix.war'
+                
+                /* Option B: If deploying to a remote server via SSH/Password, 
+                   you can use sshpass or scp inside the sh step:
+                   sh 'sshpass -p "your_password" scp target/NETFLIX-1.2.2.war ubuntu@98.80.142.127:/var/lib/tomcat10/webapps/netflix.war'
+                */
             }
         }
     }
