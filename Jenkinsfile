@@ -36,7 +36,6 @@ pipeline {
                     
                     # Copy and set correct ownership for Tomcat user on Ubuntu
                     sudo cp "$WAR_FILE" /var/lib/tomcat10/webapps/netflix.war
-                    sudo chown tomcat:tomcat /var/lib/tomcat10/webapps/netflix.war
                     sudo chmod 644 /var/lib/tomcat10/webapps/netflix.war
                     sudo systemctl restart tomcat10
                 '''
