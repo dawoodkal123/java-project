@@ -24,9 +24,24 @@ pipeline {
                 sh 'mvn package -DskipTests'
             }
         }
-        stage('tomcat') {
+        stage('Remote Tomcat Deploy') {
             steps {
-                deploy adapters: [tomcat10(alternativeDeploymentContext: '', credentialsId: 'tomcat', path: '', url: 'http://98.80.142.127:8080/')], contextPath: 'netflix', war: 'target/*.war'
+                sh '''
+                    # Safely locate the generated WAR file
+                    WAR_FILE=$(ls target/*.war | head -n 1)
+                    echo "Found WAR file: $WAR_FILE"
+                    
+                    # Securely copy the WAR file to your remote Tomcat server IP
+                    scp -o StrictHostKeyChecking=no "$WAR_FILE" ubuntu@98.80.142.127:/tmp/netflix.war
+                    
+                    # Remotely deploy and restart Tomcat on your remote VM
+                    ssh -o StrictHostKeyChecking=no ubuntu@98.80.142.127 '
+                        sudo mkdir -p /var/lib/tomcat10/webapps
+                        sudo mv /tmp/netflix.war /var/lib/tomcat10/webapps/netflix.war
+                        sudo chmod 644 /var/lib/tomcat10/webapps/netflix.war
+                        sudo systemctl restart tomcat10
+                    '
+                '''
             }
         }
     }
