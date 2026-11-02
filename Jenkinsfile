@@ -24,14 +24,10 @@ pipeline {
                 sh 'mvn package -DskipTests'
             }
         }
-        stage('Tomcat Deploy') {
+        stage('Tomcat') {
             steps {
-                sh '''
-                    sudo cp target/*.war /var/lib/tomcat10/webapps/netflix.war
-                    sudo chown tomcat:tomcat /var/lib/tomcat10/webapps/netflix.war
-                    sudo chmod 644 /var/lib/tomcat10/webapps/netflix.war
-                    sudo systemctl restart tomcat10
-                '''
+                deploy adapters: [tomcat10(alternativeDeploymentContext: '', credentialsId: 'tomcat', path: '', url: 'http://98.80.142.127:8080/')], contextPath: 'netflix', war: 'target/*'
+
             }
         }
     }
