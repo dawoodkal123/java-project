@@ -24,9 +24,9 @@ pipeline {
                 sh 'mvn package -DskipTests'
             }
         }
-        stage('Tomcat Deploy') {
+        stage('Tomcat') {
             steps {
-                sh 'curl -v -u admin:dawood123 "http://98.80.142.127:8080/manager/text/deploy?path=/netflix&update=true" --upload-file target/*.war'
+                deploy adapters: [tomcat10(alternativeDeploymentContext: '', credentialsId: 'tomcat', path: '', url: 'http://98.80.142.127:8080/')], contextPath: 'netflix', war: 'target/*'
             }
         }
     }
