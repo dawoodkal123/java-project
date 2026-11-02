@@ -24,10 +24,18 @@ pipeline {
                 sh 'mvn package -DskipTests'
             }
         }
-        stage('Tomcat') {
+        stage('Tomcat Deploy') {
             steps {
-                deploy adapters: [tomcat10(alternativeDeploymentContext: '', credentialsId: 'tomcat', path: '', url: 'http://98.80.142.127:8080/')], contextPath: 'netflix', war: 'target/*'
-
+                sh '''
+                    # Safely locate the generated WAR file and copy it
+                    WAR_FILE=$(ls target/*.war | head -n 1)
+                    echo "Found WAR file: $WAR_FILE"
+                    
+                    sudo cp "$WAR_FILE" /var/lib/tomcat10/webapps/netflix.war
+                    sudo chown tomcat:tomcat /var/lib/tomcat10/webapps/netflix.war
+                    sudo chmod 644 /var/lib/tomcat10/webapps/netflix.war
+                    sudo systemctl restart tomcat10
+                '''
             }
         }
     }
