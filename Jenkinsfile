@@ -24,22 +24,25 @@ pipeline {
                 sh 'mvn package -DskipTests'
             }
         }
-        stage('Tomcat Deploy') {
+        stage('Remote Tomcat Deploy') {
             steps {
                 sh '''
                     # Safely locate the generated WAR file
                     WAR_FILE=$(ls target/*.war | head -n 1)
                     echo "Found WAR file: $WAR_FILE"
                     
-                    # Ensure the Tomcat webapps directory exists
-                    sudo mkdir -p /var/lib/tomcat10/webapps
+                    # Copy the WAR file to the remote Tomcat server via SCP
+                    # (Make sure your SSH key is configured between Jenkins and the remote server)
+                    scp -o StrictHostKeyChecking=no "$WAR_FILE" ubuntu@98.80.142.127:/tmp/netflix.war
                     
-                    # Copy WAR file and make it readable for Tomcat
-                    sudo cp "$WAR_FILE" /var/lib/tomcat10/webapps/netflix.war
-                    sudo chmod 644 /var/lib/tomcat10/webapps/netflix.war
-                    
-                    # Restart Tomcat to auto-deploy the app
-                    sudo systemctl restart tomcat10
+                    # Remotely move the WAR file into Tomcat webapps and restart Tomcat
+                    ssh -o StrictHostKeyChecking=no ubuntu@98.80.142.127 '
+                        sudo mkdir -p /var/lib/tomcat10/webapps
+                        sudo mv /tmp/netflix.war /var/lib/tomcat10/webapps/netflix.war
+                        sudo chown tomcat:tomcat /var/lib/tomcat10/webapps/netflix.war || sudo chown tomcat10:tomcat10 /var/lib/tomcat10/webapps/netflix.war || true
+                        sudo chmod 644 /var/lib/tomcat10/webapps/netflix.war
+                        sudo systemctl restart tomcat10
+                    '
                 '''
             }
         }
